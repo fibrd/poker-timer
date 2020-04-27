@@ -138,7 +138,7 @@ export default {
             return this.$store.state.currentLevel
         },
         secondsRemaining() {
-            return this.$store.state.secondsRemaining
+            return this.$store.state.secondsRemaining < this.secondsPerLevel
                 ? this.$store.state.secondsRemaining
                 : this.secondsPerLevel
         },
