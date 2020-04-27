@@ -10,9 +10,10 @@ export default new Vuex.Store({
         secondsRemaining: 0,
         bodyColors: ['orange', 'green', 'yellow', 'blue', 'red'],
         startingStack: 20000,
-        buyin: 10000,
+        buyin: 1000,
         entries: 0,
-        playersIn: 0
+        playersIn: 0,
+        gameOver: false
     },
     mutations: {
         SET_MINUTES_PER_LEVEL(state, minutesPerLevel) {
@@ -49,6 +50,9 @@ export default new Vuex.Store({
         },
         UNDO_ELIMINATE_PLAYER(state) {
             state.playersIn++
+        },
+        SET_GAME_OVER(state) {
+            state.gameOver = true
         }
     },
     actions: {
@@ -79,8 +83,9 @@ export default new Vuex.Store({
         undoAddEntry({ commit }) {
             commit('UNDO_ADD_ENTRY')
         },
-        eliminatePlayer({ commit }) {
+        eliminatePlayer({ state, commit }) {
             commit('ELIMINATE_PLAYER')
+            if (state.playersIn === 1) commit('SET_GAME_OVER')
         },
         undoEliminatePlayer({ commit }) {
             commit('UNDO_ELIMINATE_PLAYER')

@@ -1,6 +1,8 @@
 <template>
     <div>
+        <game-over-notice v-if="gameOver" />
         <control-buttons
+            v-if="!gameOver"
             :isPaused="isPaused"
             @play="startTimer"
             @pause="stopTimer"
@@ -20,12 +22,14 @@ import DuckTimer from 'duck-timer'
 import ControlButtons from '../components/ControlButtons.vue'
 import BlindDisplay from '../components/BlindDisplay.vue'
 import StatsSidebar from '../components/StatsSidebar.vue'
+import GameOverNotice from '../components/GameOverNotice.vue'
 
 export default {
     components: {
         ControlButtons,
         BlindDisplay,
-        StatsSidebar
+        StatsSidebar,
+        GameOverNotice
     },
     data() {
         return {
@@ -50,11 +54,15 @@ export default {
             this.$store.dispatch('setSecondsRemaining', this.secondsPerLevel)
             this.startTimer()
             this.setCurrentColor()
-            this.alert()
+            this.alertUp()
         },
         startTimer() {
-            this.initTimer()
-            this.timer.start()
+            if (this.playersIn > 1) {
+                this.initTimer()
+                this.timer.start()
+            } else {
+                alert('More players needed to start!')
+            }
         },
         stopTimer() {
             this.timer.stop()
@@ -72,8 +80,12 @@ export default {
             ]
             document.querySelector('body').classList = currentColor
         },
-        alert() {
-            let alert = document.getElementById('alert-4')
+        alertUp() {
+            let alert = document.getElementById('alert-up')
+            if (alert) alert.play()
+        },
+        alertWin() {
+            let alert = document.getElementById('alert-win')
             if (alert) alert.play()
         },
         loadStorageData() {
@@ -135,6 +147,18 @@ export default {
         },
         bodyColors() {
             return this.$store.state.bodyColors
+        },
+        gameOver() {
+            return this.$store.state.gameOver
+        },
+        playersIn() {
+            return this.$store.state.playersIn
+        }
+    },
+    watch: {
+        gameOver() {
+            this.alertWin()
+            if (this.timer.clock) this.timer.stop()
         }
     },
     created() {

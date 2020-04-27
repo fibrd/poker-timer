@@ -21,8 +21,8 @@ export default {
     },
     data() {
         return {
-            svgHeight: 200,
-            radius: 80
+            svgHeight: 160,
+            radius: 60
         }
     },
     computed: {
@@ -70,6 +70,6 @@ svg circle {
 
 .timer {
     position: relative;
-    font-size: 1.6em;
+    font-size: 1.4em;
 }
 </style>

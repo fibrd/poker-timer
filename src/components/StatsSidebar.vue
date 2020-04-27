@@ -1,5 +1,11 @@
 <template>
     <aside class="sidebar">
+        <player-buttons
+            v-if="!gameOver"
+            @addEntry="addEntry"
+            @eliminatePlayer="eliminatePlayer"
+            @resetPlayers="resetPlayers"
+        />
         <table>
             <tbody>
                 <tr>
@@ -35,15 +41,16 @@
                     {{ payout }}
                 </li>
             </ol>
-            <button @click="addEntry">Add Player</button>
-            <button @click="eliminatePlayer">Eliminate Player</button>
-            <button @click="resetPlayers">Reset Players</button>
         </section>
     </aside>
 </template>
 
 <script>
+import PlayerButtons from '@/components/PlayerButtons.vue'
 export default {
+    components: {
+        PlayerButtons
+    },
     data() {
         return {
             payoutStructure: [
@@ -99,6 +106,9 @@ export default {
         },
         showPlayersRatio() {
             return this.playersIn + ' / ' + this.entries
+        },
+        gameOver() {
+            return this.$store.state.gameOver
         }
     },
     methods: {
@@ -109,8 +119,10 @@ export default {
             if (this.playersIn > 1) this.$store.dispatch('eliminatePlayer')
         },
         resetPlayers() {
-            this.$store.dispatch('setEntries', 0)
-            this.$store.dispatch('setPlayersIn', 0)
+            if (confirm('Are you sure?')) {
+                this.$store.dispatch('setEntries', 0)
+                this.$store.dispatch('setPlayersIn', 0)
+            }
         },
         setPayout(entries) {
             let structure = this.payoutStructure.find(

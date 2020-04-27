@@ -22,10 +22,10 @@ export default {
                 this.hours === 0
                     ? ''
                     : this.hours < 10
-                    ? `0${this.hours} : `
-                    : `${this.hours} : `
+                    ? `0${this.hours}:`
+                    : `${this.hours}:`
             showtime += this.mins < 10 ? '0' : ''
-            showtime += this.mins + ' : '
+            showtime += this.mins + ':'
             showtime += this.secs < 10 ? '0' : ''
             showtime += this.secs
             return showtime

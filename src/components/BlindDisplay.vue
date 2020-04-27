@@ -1,7 +1,7 @@
 <template>
     <div class="blind-container">
         <div class="blind-level-finished" v-if="currentLevel >= blinds.length">
-            GAME OVER
+            <h3>ALL-IN GAME FTW</h3>
         </div>
         <orbit-countdown />
         <article>
@@ -111,7 +111,7 @@ article {
 }
 .strong {
     font-weight: bold;
-    font-size: 1.4em;
+    font-size: 1.6em;
 }
 ul,
 ol {

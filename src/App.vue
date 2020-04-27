@@ -6,7 +6,8 @@
         </div>
         <router-view />
 
-        <audio id="alert-4" :src="require('./assets/alert4.mp3')"></audio>
+        <audio id="alert-up" :src="require('./assets/alertUp.mp3')"></audio>
+        <audio id="alert-win" :src="require('./assets/alertWin.mp3')"></audio>
     </div>
 </template>
 
