@@ -1,30 +1,37 @@
 <template>
     <div>
-        <svg height="200" width="200">
+        <svg :height="svgHeight" :width="svgHeight">
             <circle
                 class="progress"
                 cx="50%"
                 cy="50%"
-                r="20"
+                :r="radius"
                 stroke="currentColor"
             ></circle>
         </svg>
+        <simple-timer :style="{ top: -svgHeight * 0.6 + 'px' }" />
     </div>
 </template>
 
 <script>
+import SimpleTimer from '@/components/SimpleTimer.vue'
 export default {
-    props: {
-        secondsRemaining: {
-            type: Number,
-            required: true
-        },
-        secondsPerLevel: {
-            type: Number,
-            required: true
+    components: {
+        SimpleTimer
+    },
+    data() {
+        return {
+            svgHeight: 200,
+            radius: 80
         }
     },
     computed: {
+        secondsPerLevel() {
+            return this.$store.state.minutesPerLevel * 60
+        },
+        secondsRemaining() {
+            return this.$store.state.secondsRemaining
+        },
         ratio() {
             return this.secondsRemaining / this.secondsPerLevel
         }
@@ -49,16 +56,20 @@ export default {
 <style lang="scss" scoped>
 svg {
     transform: rotate(-90deg);
-    width: 10%;
     margin: 0 auto;
 }
 
 svg circle {
     fill: none;
-    stroke-width: 2;
+    stroke-width: 4;
 }
 
 .progress {
     transition: stroke-dashoffset 1s linear;
+}
+
+.timer {
+    position: relative;
+    font-size: 1.6em;
 }
 </style>

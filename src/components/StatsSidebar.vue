@@ -1,19 +1,44 @@
 <template>
     <aside class="sidebar">
-        <ul class="stats-list">
-            <li class="stats-item">Starting stack: {{ startingStack }}</li>
-            <li class="stats-item">Average stack: {{ averageStack }}</li>
-            <li class="stats-item">Players: {{ playersRatio }}</li>
-            <li class="stats-item">Total entries: {{ entries }}</li>
-            <li class="stats-item">Total chipcount: {{ totalChipcount }}</li>
-            <li class="stats-item">Prizepool: {{ prizepool }}</li>
-            <li class="stats-item">Buy-in: {{ buyin }}</li>
-        </ul>
-        <ol class="payout-list">
-            <li v-for="(payout, index) in payouts" :key="index">
-                {{ payout }}
-            </li>
-        </ol>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Buyin:</th>
+                    <td>{{ buyin }}</td>
+                </tr>
+                <tr>
+                    <th>Starting Stack:</th>
+                    <td>{{ startingStack }}</td>
+                </tr>
+                <tr>
+                    <th>Average Stack:</th>
+                    <td>{{ averageStack }}</td>
+                </tr>
+                <tr>
+                    <th>Total Chipcount:</th>
+                    <td>{{ totalChipcount }}</td>
+                </tr>
+                <tr>
+                    <th>Players:</th>
+                    <td>{{ showPlayersRatio }}</td>
+                </tr>
+                <tr>
+                    <th>Prizepool:</th>
+                    <td>{{ prizepool }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <section class="payouts">
+            <h4>Payouts:</h4>
+            <ol class="payout-list">
+                <li v-for="(payout, index) in payouts" :key="index">
+                    {{ payout }}
+                </li>
+            </ol>
+            <button @click="addEntry">Add Player</button>
+            <button @click="eliminatePlayer">Eliminate Player</button>
+            <button @click="resetPlayers">Reset Players</button>
+        </section>
     </aside>
 </template>
 
@@ -21,11 +46,6 @@
 export default {
     data() {
         return {
-            startingStack: 0,
-            entries: 12,
-            playersTotal: 10,
-            playersIn: 8,
-            buyin: 200,
             payoutStructure: [
                 {
                     upToPlayers: 5,
@@ -56,26 +76,45 @@ export default {
         }
     },
     computed: {
+        startingStack() {
+            return this.$store.state.startingStack
+        },
+        entries() {
+            return this.$store.state.entries
+        },
+        playersIn() {
+            return this.$store.state.playersIn
+        },
+        buyin() {
+            return this.$store.state.buyin
+        },
         totalChipcount() {
             return this.startingStack * this.entries
         },
         averageStack() {
             return Math.round(this.totalChipcount / this.playersIn)
         },
-        playersRatio() {
-            return this.playersIn + ' / ' + this.playersTotal
-        },
-        reenties() {
-            return this.entries - this.playersTotal
-        },
         prizepool() {
             return this.entries * this.buyin
+        },
+        showPlayersRatio() {
+            return this.playersIn + ' / ' + this.entries
         }
     },
     methods: {
-        setPayout(playersCount) {
+        addEntry() {
+            this.$store.dispatch('addEntry')
+        },
+        eliminatePlayer() {
+            if (this.playersIn > 1) this.$store.dispatch('eliminatePlayer')
+        },
+        resetPlayers() {
+            this.$store.dispatch('setEntries', 0)
+            this.$store.dispatch('setPlayersIn', 0)
+        },
+        setPayout(entries) {
             let structure = this.payoutStructure.find(
-                item => item.upToPlayers >= playersCount
+                item => item.upToPlayers >= entries
             )
 
             this.payouts = structure.payouts.map(
@@ -83,15 +122,46 @@ export default {
             )
         }
     },
+    watch: {
+        entries(value) {
+            this.setPayout(value)
+            localStorage.setItem('entries', value)
+        },
+        playersIn(value) {
+            localStorage.setItem('playersIn', value)
+        }
+    },
     mounted() {
-        this.playersTotal = localStorage.getItem('playersTotal')
-        this.playersIn = localStorage.getItem('playersIn')
-        this.startingStack = localStorage.getItem('startingStack')
-        this.buyin = localStorage.getItem('buyin')
-        this.entries = localStorage.getItem('entries')
         this.setPayout(this.entries)
     }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+ul,
+ol {
+    width: 25%;
+    max-width: 5em;
+    margin: 1em auto;
+
+    text-align: left;
+}
+li {
+    text-align: center;
+}
+h4 {
+    margin-bottom: 1em;
+}
+
+table {
+    margin: 1em auto;
+    text-align: center;
+
+    border: currentColor 1px dotted;
+    padding: 0.5em 0.8em;
+    th,
+    td {
+        margin: 0.5em;
+    }
+}
+</style>

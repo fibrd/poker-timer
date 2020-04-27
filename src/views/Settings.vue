@@ -1,33 +1,39 @@
 <template>
     <div>
         <h1>SETTINGS PAGE</h1>
-        <div class="container">
-            <label>
-                Minutes Per Level
-                <input
-                    type="number"
-                    min="1"
-                    max="180"
-                    v-model.number="levelTime"
-                />
-            </label>
-            <label>
-                Starting Stack
-                <input type="number" min="1" v-model.number="startingStack" />
-            </label>
-            <label>
-                Buy-in
-                <input type="number" min="1" v-model.number="buyin" />
-            </label>
-            <label>
-                Entries
-                <input
-                    type="number"
-                    min="1"
-                    max="10000"
-                    v-model.number="entries"
-                />
-            </label>
+        <div class="stats-container">
+            <h4>
+                <label for="minutesPerLevel">
+                    Minutes Per Level:
+                </label>
+            </h4>
+            <input
+                id="minutesPerLevel"
+                type="number"
+                min="1"
+                max="180"
+                v-model.number="minutesPerLevel"
+            />
+
+            <h4>
+                <label for="startingStack">
+                    Starting Stack:
+                </label>
+            </h4>
+            <input
+                id="startingStack"
+                type="number"
+                min="1"
+                max="100000"
+                v-model.number="startingStack"
+            />
+
+            <h4>
+                <label for="buyin">
+                    Buy-in:
+                </label>
+            </h4>
+            <input id="buyin" type="number" min="1" v-model.number="buyin" />
         </div>
     </div>
 </template>
@@ -36,55 +42,66 @@
 export default {
     data() {
         return {
-            levelTime: 10,
-            startingStack: 20000,
-            buyin: 200,
-            entries: 10
+            minutesPerLevel: 0,
+            startingStack: 0,
+            buyin: 0,
+            entries: 0
         }
     },
     methods: {
-        updateLevelTime(value) {
+        loadStore() {
+            this.minutesPerLevel = this.$store.state.minutesPerLevel
+            this.startingStack = this.$store.state.startingStack
+            this.buyin = this.$store.state.buyin
+            this.entries = this.$store.state.entries
+        },
+        storeData() {
+            this.storeItem(
+                'minutesPerLevel',
+                'setMinutesPerLevel',
+                this.minutesPerLevel
+            )
+            this.storeItem(
+                'startingStack',
+                'setStartingStack',
+                this.startingStack
+            )
+            this.storeItem('buyin', 'setBuyin', this.buyin)
+            this.storeItem('entries', 'setEntries', this.entries)
+        },
+        storeItem(item, action, value) {
             if (value > 0) {
-                localStorage.setItem('levelTime', value)
+                localStorage.setItem(item, value)
+                this.$store.dispatch(action, value)
             }
-        },
-        updateStartingStack(value) {
-            if (this.startingStack > 0) {
-                localStorage.setItem('startingStack', value)
-            }
-        },
-        updateBuyin(value) {
-            if (this.buyin > 0) {
-                localStorage.setItem('buyin', value)
-            }
-        },
-        updateEntries(value) {
-            if (this.buyin > 0) {
-                localStorage.setItem('entries', value)
-            }
-        }
-    },
-    watch: {
-        levelTime(value) {
-            this.updateLevelTime(value)
-        },
-        startingStack(value) {
-            this.updateStartingStack(value)
-        },
-        buyin(value) {
-            this.updateBuyin(value)
-        },
-        entries(value) {
-            this.updateEntries(value)
         }
     },
     created() {
-        this.levelTime = +localStorage.getItem('levelTime')
-        this.startingStack = +localStorage.getItem('startingStack')
-        this.buyin = +localStorage.getItem('buyin')
-        this.entries = +localStorage.getItem('entries')
+        this.loadStore()
+    },
+    beforeDestroy() {
+        this.storeData()
     }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+h4 {
+    margin: 0.6em auto;
+}
+
+input {
+    color: inherit;
+    background-color: inherit;
+    margin-bottom: 2em;
+    font-size: 1.2em;
+    max-width: 6em;
+    text-align: center;
+    padding: 0.4em;
+    border: currentColor 1px solid;
+}
+
+.stats-container {
+    margin-top: 3em;
+}
+</style>

@@ -1,35 +1,23 @@
 <template>
-    <div class="row">
-        <div class=" col-md-8">
-            <div class="blind-level" v-if="currentLevel < blinds.length">
-                {{ blinds[currentLevel].SB }} /
-                {{ blinds[currentLevel].BB }}
-            </div>
-            <div class="blind-level-finished" v-else>
-                GAME OVER
-            </div>
-            <orbit-countdown
-                :secondsRemaining="secondsRemaining"
-                :secondsPerLevel="secondsPerLevel"
-            />
+    <div class="blind-container">
+        <div class="blind-level-finished" v-if="currentLevel >= blinds.length">
+            GAME OVER
         </div>
-
-        <aside class="col-md-4">
-            <article>
-                <header>Blind Structure:</header>
-                <main class="blind-structure">
-                    <ol class="blind-list">
-                        <li
-                            v-for="(blind, index) in blinds"
-                            :class="{ strong: index === currentLevel }"
-                            :key="index"
-                        >
-                            {{ blind.SB }} / {{ blind.BB }}
-                        </li>
-                    </ol>
-                </main>
-            </article>
-        </aside>
+        <orbit-countdown />
+        <article>
+            <h3>Blind Structure:</h3>
+            <main class="blind-structure">
+                <ol class="blind-list">
+                    <li
+                        v-for="(blind, index) in blinds"
+                        :class="{ strong: index === currentLevel }"
+                        :key="index"
+                    >
+                        {{ blind.SB }} / {{ blind.BB }}
+                    </li>
+                </ol>
+            </main>
+        </article>
     </div>
 </template>
 
@@ -38,20 +26,6 @@ import OrbitCountdown from './OrbitCountdown.vue'
 export default {
     components: {
         OrbitCountdown
-    },
-    props: {
-        currentLevel: {
-            type: Number,
-            default: 0
-        },
-        secondsRemaining: {
-            type: Number,
-            required: true
-        },
-        secondsPerLevel: {
-            type: Number,
-            required: true
-        }
     },
     data() {
         return {
@@ -118,13 +92,29 @@ export default {
                 }
             ]
         }
+    },
+    computed: {
+        currentLevel() {
+            return this.$store.state.currentLevel
+        }
     }
 }
 </script>
 
 <style lang="scss" scoped>
+.blind-container {
+    margin-bottom: 0;
+}
+article {
+    position: relative;
+    top: -40px;
+}
 .strong {
     font-weight: bold;
     font-size: 1.4em;
+}
+ul,
+ol {
+    padding-left: 0;
 }
 </style>

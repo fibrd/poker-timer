@@ -1,15 +1,15 @@
 <template>
     <div>
-        <button v-if="!running" @click.prevent="$emit('play')">play</button>
-        <button v-if="running" @click.prevent="$emit('pause')">pause</button>
-        <button v-if="!running" @click.prevent="reset">reset</button>
+        <button v-if="isPaused" @click.prevent="$emit('play')">Play</button>
+        <button v-if="!isPaused" @click.prevent="$emit('pause')">Pause</button>
+        <button v-if="isPaused" @click.prevent="reset">Time reset</button>
     </div>
 </template>
 
 <script>
 export default {
     props: {
-        running: {
+        isPaused: {
             type: Boolean,
             required: true
         }

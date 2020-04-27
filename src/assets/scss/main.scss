@@ -19,3 +19,20 @@ body {
         color: inherit;
     }
 }
+
+button {
+    color: inherit;
+    background-color: inherit;
+    font-weight: bold;
+    padding: 0.4em 0.8em;
+    border: currentColor 1px solid;
+    border-radius: 0.4em;
+    margin: 0.2em;
+    transition: background-color 0.4s ease;
+
+    &:hover,
+    &:focus {
+        cursor: pointer;
+        background-color: darken(#e9e9e9, 20);
+    }
+}

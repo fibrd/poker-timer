@@ -1,19 +1,13 @@
 <template>
     <div>
-        <simple-timer :secondsRemaining="secondsRemaining" />
-        <simple-clock :secondsOverall="secondsOverall" />
         <control-buttons
-            :running="this.running"
-            @play="play"
-            @pause="pause"
+            :isPaused="isPaused"
+            @play="startTimer"
+            @pause="stopTimer"
             @reset="reset"
         />
 
-        <blind-display
-            :secondsPerLevel="secondsPerLevel"
-            :secondsRemaining="secondsRemaining"
-            :currentLevel="currentLevel"
-        />
+        <blind-display />
         <stats-sidebar />
     </div>
 </template>
@@ -23,29 +17,19 @@
 import DuckTimer from 'duck-timer'
 
 // components
-import SimpleTimer from '../components/SimpleTimer.vue'
-import SimpleClock from '../components/SimpleClock.vue'
 import ControlButtons from '../components/ControlButtons.vue'
 import BlindDisplay from '../components/BlindDisplay.vue'
 import StatsSidebar from '../components/StatsSidebar.vue'
 
 export default {
     components: {
-        SimpleTimer,
-        SimpleClock,
         ControlButtons,
         BlindDisplay,
         StatsSidebar
     },
     data() {
         return {
-            timer: {},
-            secondsOverall: 0,
-            secondsRemaining: 0,
-            levelTime: 0,
-            running: false,
-            currentLevel: 0,
-            bodyColors: ['red', 'green', 'yellow', 'blue', 'purple', 'orange']
+            timer: {}
         }
     },
     methods: {
@@ -56,14 +40,14 @@ export default {
                 timeout: this.secondsPerLevel * 1000
             })
             this.timer.onInterval(res => {
-                this.secondsRemaining = res.remain.seconds
+                this.$store.dispatch('setSecondsRemaining', res.remain.seconds)
             })
 
             this.timer.onTimeout(this.levelUp)
         },
         levelUp() {
-            this.currentLevel++
-            this.secondsRemaining = this.secondsPerLevel
+            this.$store.dispatch('setCurrentLevel', this.currentLevel + 1)
+            this.$store.dispatch('setSecondsRemaining', this.secondsPerLevel)
             this.startTimer()
             this.setCurrentColor()
             this.alert()
@@ -75,20 +59,12 @@ export default {
         stopTimer() {
             this.timer.stop()
         },
-        play() {
-            this.running = true
-            this.startTimer()
-        },
-        pause() {
-            this.running = false
-            this.timer.stop()
-        },
         reset() {
-            this.running = false
-            this.currentLevel = 0
-            this.secondsOverall = 0
-            this.secondsRemaining = this.secondsPerLevel
-            this.timer.reset()
+            this.$store.dispatch('setCurrentLevel', 0)
+            this.$store.dispatch('setSecondsRemaining', this.secondsPerLevel)
+            if (this.timer.clock) {
+                this.timer.reset()
+            }
         },
         setCurrentColor() {
             const currentColor = this.bodyColors[
@@ -99,42 +75,78 @@ export default {
         alert() {
             let alert = document.getElementById('alert-4')
             if (alert) alert.play()
-        }
-    },
-    watch: {
-        running(value) {
-            localStorage.setItem('running', value)
         },
-        secondsRemaining(value) {
-            localStorage.setItem('secondsRemaining', value)
+        loadStorageData() {
+            const minutesPerLevel = JSON.parse(
+                localStorage.getItem('minutesPerLevel')
+            )
+            const currentLevel = JSON.parse(
+                localStorage.getItem('currentLevel')
+            )
+            const secondsRemaining = JSON.parse(
+                localStorage.getItem('secondsRemaining')
+            )
+            const startingStack = JSON.parse(
+                localStorage.getItem('startingStack')
+            )
+            const buyin = JSON.parse(localStorage.getItem('buyin'))
+            const entries = JSON.parse(localStorage.getItem('entries'))
+            const playersIn = JSON.parse(localStorage.getItem('playersIn'))
+
+            if (minutesPerLevel != null)
+                this.$store.dispatch('setMinutesPerLevel', minutesPerLevel)
+            if (currentLevel != null)
+                this.$store.dispatch('setCurrentLevel', currentLevel)
+            if (secondsRemaining != null)
+                this.$store.dispatch('setSecondsRemaining', secondsRemaining)
+            if (startingStack != null)
+                this.$store.dispatch('setStartingStack', startingStack)
+            if (buyin != null) this.$store.dispatch('setBuyin', buyin)
+            if (entries != null) this.$store.dispatch('setEntries', entries)
+            if (playersIn != null)
+                this.$store.dispatch('setPlayersIn', playersIn)
         },
-        secondsOverall(value) {
-            localStorage.setItem('secondsOverall', value)
-        },
-        currentLevel(value) {
-            localStorage.setItem('currentLevel', value)
+        saveDataToStorage() {
+            localStorage.setItem('currentLevel', this.currentLevel)
+            localStorage.setItem('secondsRemaining', this.secondsRemaining)
         }
     },
     computed: {
+        isPaused() {
+            if (this.timer.isPaused || this.timer.isPaused === undefined) {
+                return true
+            } else {
+                return false
+            }
+        },
+        minutesPerLevel() {
+            return this.$store.state.minutesPerLevel
+        },
+        currentLevel() {
+            return this.$store.state.currentLevel
+        },
+        secondsRemaining() {
+            return this.$store.state.secondsRemaining
+                ? this.$store.state.secondsRemaining
+                : this.secondsPerLevel
+        },
         secondsPerLevel() {
-            return (this.levelTime * 60) / 10
+            return this.minutesPerLevel * 60
+        },
+        bodyColors() {
+            return this.$store.state.bodyColors
         }
+    },
+    created() {
+        this.loadStorageData()
+        window.addEventListener('beforeunload', this.saveDataToStorage)
     },
     mounted() {
-        this.running = false
-        this.levelTime = JSON.parse(localStorage.getItem('levelTime'))
-        this.currentLevel = JSON.parse(localStorage.getItem('currentLevel'))
-        this.secondsOverall = JSON.parse(localStorage.getItem('secondsOverall'))
-        this.secondsRemaining = JSON.parse(
-            localStorage.getItem('secondsRemaining')
-        )
         this.setCurrentColor()
     },
-    destroyed() {
-        if (this.running) {
-            this.pause()
-            localStorage.setItem('running', false)
-        }
+    beforeDestroy() {
+        this.saveDataToStorage()
+        if (this.timer.clock) this.timer.stop()
     }
 }
 </script>
