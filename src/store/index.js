@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
     state: {
-        minutesPerLevel: 20,
+        minutesPerLevel: 1,
         currentLevel: 0,
         secondsRemaining: 0,
         bodyColors: ['orange', 'green', 'yellow', 'blue', 'red'],
