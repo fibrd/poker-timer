@@ -10,7 +10,7 @@
         <table>
             <tbody>
                 <tr>
-                    <th>Buyin:</th>
+                    <th>Buy-in:</th>
                     <td>{{ buyin }}</td>
                 </tr>
                 <tr>
@@ -118,12 +118,14 @@ export default {
             this.$store.dispatch('addEntry')
         },
         eliminatePlayer() {
-            if (this.playersIn > 1) this.$store.dispatch('eliminatePlayer')
+            if (this.playersIn < 2) return
+            else this.$store.dispatch('eliminatePlayer')
+
+            if (this.playersIn === 1) this.$store.dispatch('setGameOver')
         },
         resetPlayers() {
-            if (confirm('Are you sure?')) {
-                this.$store.dispatch('setEntries', 0)
-                this.$store.dispatch('setPlayersIn', 0)
+            if (confirm('Are you sure?') || this.gameOver) {
+                this.$store.dispatch('resetPlayers')
                 this.$emit('stopTimer')
             }
         },
@@ -144,6 +146,9 @@ export default {
         },
         playersIn(value) {
             localStorage.setItem('playersIn', value)
+        },
+        gameOver() {
+            window.addEventListener('beforeunload', this.resetPlayers)
         }
     },
     mounted() {

@@ -41,15 +41,8 @@ export default new Vuex.Store({
             state.entries++
             state.playersIn++
         },
-        UNDO_ADD_ENTRY(state) {
-            state.entries--
-            state.playersIn--
-        },
         ELIMINATE_PLAYER(state) {
             state.playersIn--
-        },
-        UNDO_ELIMINATE_PLAYER(state) {
-            state.playersIn++
         },
         SET_GAME_OVER(state) {
             state.gameOver = true
@@ -80,15 +73,15 @@ export default new Vuex.Store({
         addEntry({ commit }) {
             commit('ADD_ENTRY')
         },
-        undoAddEntry({ commit }) {
-            commit('UNDO_ADD_ENTRY')
-        },
-        eliminatePlayer({ state, commit }) {
+        eliminatePlayer({ commit }) {
             commit('ELIMINATE_PLAYER')
-            if (state.playersIn === 1) commit('SET_GAME_OVER')
         },
-        undoEliminatePlayer({ commit }) {
-            commit('UNDO_ELIMINATE_PLAYER')
+        resetPlayers({ commit }) {
+            commit('SET_ENTRIES', 0)
+            commit('SET_PLAYERS_IN', 0)
+        },
+        setGameOver({ commit }) {
+            commit('SET_GAME_OVER')
         }
     }
 })

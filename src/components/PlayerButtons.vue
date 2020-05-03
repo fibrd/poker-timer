@@ -1,32 +1,38 @@
 <template>
-    <div class="button-controller">
+    <div class="button-container">
         <button class="button" @click="$emit('addEntry')">
             Add Player
         </button>
-        <button class="button" @click="$emit('eliminatePlayer')">
+        <button
+            v-if="playersIn > 1"
+            class="button"
+            @click="$emit('eliminatePlayer')"
+        >
             Eliminate Player
         </button>
-        <button class="button is-small" @click="$emit('resetPlayers')">
+        <button
+            v-if="playersIn > 0"
+            class="button is-small"
+            @click="$emit('resetPlayers')"
+        >
             Reset Players
         </button>
     </div>
 </template>
 
+<script>
+export default {
+    computed: {
+        playersIn() {
+            return this.$store.state.playersIn
+        }
+    }
+}
+</script>
+
 <style lang="scss" scoped>
-.button-controller {
+.button-container {
     margin: 0 auto;
     max-width: 60%;
-}
-.button {
-    background: none;
-    border: currentColor 1px solid;
-    color: inherit;
-    display: block;
-    margin: 1em auto;
-
-    &:hover,
-    &:focus {
-        background-color: rgba(225, 225, 225, 0.2);
-    }
 }
 </style>

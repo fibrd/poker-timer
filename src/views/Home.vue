@@ -3,8 +3,9 @@
         <div class="column is-6">
             <game-over-notice v-if="gameOver" />
             <control-buttons
-                v-if="!gameOver"
+                v-else
                 :isPaused="isPaused"
+                :notStarted="notStarted"
                 @play="startTimer"
                 @pause="stopTimer"
                 @reset="resetTimer"
@@ -72,8 +73,10 @@ export default {
         resetTimer() {
             this.$store.dispatch('setCurrentLevel', 0)
             this.$store.dispatch('setSecondsRemaining', this.secondsPerLevel)
+            this.setCurrentColor()
             if (this.timer.clock) {
                 this.timer.reset()
+                this.timer = {}
             }
         },
         setCurrentColor() {
@@ -91,50 +94,64 @@ export default {
             if (alert) alert.play()
         },
         loadStorageData() {
-            const minutesPerLevel = JSON.parse(
-                localStorage.getItem('minutesPerLevel')
-            )
-            const currentLevel = JSON.parse(
-                localStorage.getItem('currentLevel')
-            )
-            const secondsRemaining = JSON.parse(
-                localStorage.getItem('secondsRemaining')
-            )
-            const startingStack = JSON.parse(
-                localStorage.getItem('startingStack')
-            )
-            const buyin = JSON.parse(localStorage.getItem('buyin'))
-            const entries = JSON.parse(localStorage.getItem('entries'))
-            const playersIn = JSON.parse(localStorage.getItem('playersIn'))
-
-            if (playersIn > 1) {
-                if (currentLevel != null)
-                    this.$store.dispatch('setCurrentLevel', currentLevel)
-                this.$store.dispatch('setPlayersIn', playersIn)
+            const data = {
+                minutesPerLevel: 0,
+                currentLevel: 0,
+                secondsRemaining: 0,
+                startingStack: 0,
+                buyin: 0,
+                entries: 0,
+                playersIn: 0
             }
+
+            for (const key in data) {
+                data[key] = JSON.parse(localStorage.getItem(key))
+            }
+            const {
+                minutesPerLevel,
+                currentLevel,
+                secondsRemaining,
+                startingStack,
+                buyin,
+                entries,
+                playersIn
+            } = data
+
+            if (currentLevel != null)
+                this.$store.dispatch('setCurrentLevel', currentLevel)
             if (minutesPerLevel != null)
                 this.$store.dispatch('setMinutesPerLevel', minutesPerLevel)
-
             if (startingStack != null)
                 this.$store.dispatch('setStartingStack', startingStack)
             if (buyin != null) this.$store.dispatch('setBuyin', buyin)
             if (entries != null) this.$store.dispatch('setEntries', entries)
+            if (playersIn != null)
+                this.$store.dispatch('setPlayersIn', playersIn)
 
             this.$store.dispatch(
                 'setSecondsRemaining',
                 secondsRemaining != 0 && secondsRemaining != null
                     ? secondsRemaining
-                    : this.$store.state.minutesPerLevel * 60
+                    : this.minutesPerLevel * 60
             )
         },
         saveDataToStorage() {
-            // localStorage.setItem('currentLevel', this.currentLevel)
-            // localStorage.setItem('secondsRemaining', this.secondsRemaining)
+            localStorage.setItem(
+                'currentLevel',
+                this.gameOver ? 0 : this.currentLevel
+            )
+            localStorage.setItem(
+                'secondsRemaining',
+                this.gameOver ? 0 : this.secondsRemaining
+            )
         }
     },
     computed: {
+        notStarted() {
+            return this.timer.clock === undefined
+        },
         isPaused() {
-            return this.timer.isPaused || this.timer.isPaused === undefined
+            return this.timer.isPaused || this.notStarted
         },
         minutesPerLevel() {
             return this.$store.state.minutesPerLevel
@@ -153,11 +170,11 @@ export default {
         bodyColors() {
             return this.$store.state.bodyColors
         },
-        gameOver() {
-            return this.$store.state.gameOver
-        },
         playersIn() {
             return this.$store.state.playersIn
+        },
+        gameOver() {
+            return this.$store.state.gameOver
         }
     },
     watch: {
