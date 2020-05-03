@@ -8,6 +8,7 @@
                 </label>
             </h4>
             <input
+                class="input"
                 id="minutesPerLevel"
                 type="number"
                 min="1"
@@ -21,6 +22,8 @@
                 </label>
             </h4>
             <input
+                autofocus
+                class="input"
                 id="startingStack"
                 type="number"
                 min="1"
@@ -33,7 +36,14 @@
                     Buy-in:
                 </label>
             </h4>
-            <input id="buyin" type="number" min="1" v-model.number="buyin" />
+            <input
+                autofocus
+                class="input"
+                id="buyin"
+                type="number"
+                min="1"
+                v-model.number="buyin"
+            />
         </div>
     </div>
 </template>
@@ -86,18 +96,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+h1 {
+    font-weight: bold;
+    font-size: 2em;
+}
+
 h4 {
-    margin: 0.6em auto;
+    margin-bottom: 0.6em;
 }
 
 input {
-    color: inherit;
-    background-color: inherit;
     margin-bottom: 2em;
     font-size: 1.2em;
     max-width: 6em;
     text-align: center;
     padding: 0.4em;
+}
+.input {
+    color: inherit;
+    background-color: inherit;
     border: currentColor 1px solid;
 }
 

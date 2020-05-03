@@ -1,11 +1,11 @@
 <template>
     <div class="blind-container">
         <div class="blind-level-finished" v-if="currentLevel >= blinds.length">
-            <h3>ALL-IN GAME FTW</h3>
+            <h2>ALL-IN GAME FTW</h2>
         </div>
         <orbit-countdown />
         <article>
-            <h3>Blind Structure:</h3>
+            <h2>Blind Structure:</h2>
             <main class="blind-structure">
                 <ol class="blind-list">
                     <li
@@ -116,5 +116,6 @@ article {
 ul,
 ol {
     padding-left: 0;
+    list-style: none;
 }
 </style>

@@ -9,7 +9,7 @@
                 stroke="currentColor"
             ></circle>
         </svg>
-        <simple-timer :style="{ top: -svgHeight * 0.6 + 'px' }" />
+        <simple-timer :style="{ top: -svgHeight * 0.62 + 'px' }" />
     </div>
 </template>
 

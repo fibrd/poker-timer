@@ -1,16 +1,18 @@
 <template>
-    <div>
-        <game-over-notice v-if="gameOver" />
-        <control-buttons
-            v-if="!gameOver"
-            :isPaused="isPaused"
-            @play="startTimer"
-            @pause="stopTimer"
-            @reset="reset"
-        />
+    <div class="main-container columns">
+        <div class="column is-6">
+            <game-over-notice v-if="gameOver" />
+            <control-buttons
+                v-if="!gameOver"
+                :isPaused="isPaused"
+                @play="startTimer"
+                @pause="stopTimer"
+                @reset="resetTimer"
+            />
 
-        <blind-display />
-        <stats-sidebar />
+            <blind-display />
+        </div>
+        <stats-sidebar @stopTimer="stopTimer" class="column is-6" />
     </div>
 </template>
 
@@ -65,9 +67,9 @@ export default {
             }
         },
         stopTimer() {
-            this.timer.stop()
+            if (this.timer.clock) this.timer.stop()
         },
-        reset() {
+        resetTimer() {
             this.$store.dispatch('setCurrentLevel', 0)
             this.$store.dispatch('setSecondsRemaining', this.secondsPerLevel)
             if (this.timer.clock) {
@@ -105,31 +107,34 @@ export default {
             const entries = JSON.parse(localStorage.getItem('entries'))
             const playersIn = JSON.parse(localStorage.getItem('playersIn'))
 
+            if (playersIn > 1) {
+                if (currentLevel != null)
+                    this.$store.dispatch('setCurrentLevel', currentLevel)
+                this.$store.dispatch('setPlayersIn', playersIn)
+            }
             if (minutesPerLevel != null)
                 this.$store.dispatch('setMinutesPerLevel', minutesPerLevel)
-            if (currentLevel != null)
-                this.$store.dispatch('setCurrentLevel', currentLevel)
-            if (secondsRemaining != null)
-                this.$store.dispatch('setSecondsRemaining', secondsRemaining)
+
             if (startingStack != null)
                 this.$store.dispatch('setStartingStack', startingStack)
             if (buyin != null) this.$store.dispatch('setBuyin', buyin)
             if (entries != null) this.$store.dispatch('setEntries', entries)
-            if (playersIn != null)
-                this.$store.dispatch('setPlayersIn', playersIn)
+
+            this.$store.dispatch(
+                'setSecondsRemaining',
+                secondsRemaining != 0 && secondsRemaining != null
+                    ? secondsRemaining
+                    : this.$store.state.minutesPerLevel * 60
+            )
         },
         saveDataToStorage() {
-            localStorage.setItem('currentLevel', this.currentLevel)
-            localStorage.setItem('secondsRemaining', this.secondsRemaining)
+            // localStorage.setItem('currentLevel', this.currentLevel)
+            // localStorage.setItem('secondsRemaining', this.secondsRemaining)
         }
     },
     computed: {
         isPaused() {
-            if (this.timer.isPaused || this.timer.isPaused === undefined) {
-                return true
-            } else {
-                return false
-            }
+            return this.timer.isPaused || this.timer.isPaused === undefined
         },
         minutesPerLevel() {
             return this.$store.state.minutesPerLevel
@@ -164,8 +169,6 @@ export default {
     created() {
         this.loadStorageData()
         window.addEventListener('beforeunload', this.saveDataToStorage)
-    },
-    mounted() {
         this.setCurrentColor()
     },
     beforeDestroy() {
@@ -175,4 +178,9 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.main-container {
+    margin: 0 auto;
+    max-width: 40em;
+}
+</style>

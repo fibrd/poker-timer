@@ -1,7 +1,18 @@
+@import '~bulma/css/bulma.css';
 @import 'colors';
+
+html {
+    background-color: inherit;
+}
 
 body {
     transition: background-color 1s linear;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 1.4em;
+    margin: 0.6em;
 }
 
 #app {
@@ -28,7 +39,7 @@ button {
     border: currentColor 1px solid;
     border-radius: 0.4em;
     margin: 0.2em;
-    transition: background-color 0.4s ease;
+    transition: background-color 0.2s ease;
 
     &:hover,
     &:focus {

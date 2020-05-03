@@ -1,11 +1,12 @@
 <template>
-    <aside class="sidebar">
+    <div class="sidebar">
         <player-buttons
             v-if="!gameOver"
             @addEntry="addEntry"
             @eliminatePlayer="eliminatePlayer"
             @resetPlayers="resetPlayers"
         />
+
         <table>
             <tbody>
                 <tr>
@@ -34,15 +35,16 @@
                 </tr>
             </tbody>
         </table>
+
         <section class="payouts">
-            <h4>Payouts:</h4>
+            <h2>Payouts:</h2>
             <ol class="payout-list">
                 <li v-for="(payout, index) in payouts" :key="index">
                     {{ payout }}
                 </li>
             </ol>
         </section>
-    </aside>
+    </div>
 </template>
 
 <script>
@@ -122,6 +124,7 @@ export default {
             if (confirm('Are you sure?')) {
                 this.$store.dispatch('setEntries', 0)
                 this.$store.dispatch('setPlayersIn', 0)
+                this.$emit('stopTimer')
             }
         },
         setPayout(entries) {
@@ -154,26 +157,32 @@ ul,
 ol {
     width: 25%;
     max-width: 5em;
-    margin: 1em auto;
+    margin: 0 auto;
 
-    text-align: left;
+    li {
+        padding-left: 1em;
+    }
 }
-li {
-    text-align: center;
-}
+
 h4 {
     margin-bottom: 1em;
 }
 
 table {
-    margin: 1em auto;
+    background-color: inherit;
+    margin: 3em auto;
     text-align: center;
+    border-collapse: inherit;
+    border-spacing: 20px 5px;
 
     border: currentColor 1px dotted;
     padding: 0.5em 0.8em;
     th,
     td {
+        color: inherit;
         margin: 0.5em;
+        border: none;
+        white-space: nowrap;
     }
 }
 </style>
