@@ -37,10 +37,6 @@ export default new Vuex.Store({
         SET_PLAYERS_IN(state, playersIn) {
             state.playersIn = playersIn
         },
-        ADD_ENTRY(state) {
-            state.entries++
-            state.playersIn++
-        },
         ELIMINATE_PLAYER(state) {
             state.playersIn--
         },
@@ -70,8 +66,9 @@ export default new Vuex.Store({
         setPlayersIn({ commit }, playersIn) {
             commit('SET_PLAYERS_IN', playersIn)
         },
-        addEntry({ commit }) {
-            commit('ADD_ENTRY')
+        addEntry({ state, commit }) {
+            commit('SET_ENTRIES', state.entries + 1)
+            commit('SET_PLAYERS_IN', state.playersIn + 1)
         },
         eliminatePlayer({ commit }) {
             commit('ELIMINATE_PLAYER')

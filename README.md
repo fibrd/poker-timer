@@ -5,7 +5,7 @@ Tvorba frontendu v JavaScriptu / Vue.js.
 
 ## Popis a nastavení
 
-Primární funkce SPA je sledování aktuálních blind-levelů s využitím nastavitelného časovače a dalších turnajových statistik. Pro spuštění časovače a zahájení turnaje je nutné do hry přidat dva a více hráčů. Časovač hru ukončí automaticky po eliminaci posledního možného hráče. K zahájení další hry je nutné časovač manuálně zresetovat.
+Primární funkce SPA je sledování aktuálních blind-levelů s využitím nastavitelného časovače a dalších turnajových statistik. Pro spuštění časovače a zahájení turnaje je nutné do hry přidat dva a více hráčů. Časovač hru ukončí automaticky po eliminaci posledního možného hráče.
 
 ## Webpage
 
